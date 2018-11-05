@@ -16,6 +16,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from numpy import *
 import numpy
+
 def VSM():
     stopworddic = set(stopwords.words('english'))  
     wordnet_lemmatizer = WordNetLemmatizer()
@@ -59,27 +60,11 @@ def VSM():
                         break;
                 for word in text:
                     sentence=sentence+word+" "
-                text1.append(sentence)
-                 
-    #分出测试集与训练集            
-    '''trainingSet=[]
-    testSet=[]
-    for x in range(len(text1)-1):
-    	if random.random() < 0.81:
-    		trainingSet.append(text1[x])
-    	else:
-    		testSet.append(text1[x])'''
-    #print(len(trainingSet))
-    #print(len(testSet))
-    
+                text1.append(sentence)  
     #统计词频
     vectorizer=CountVectorizer()#初始化对象
     X=vectorizer.fit_transform(text1)#词频
-    #print X.toarray()
-    #tf = X.toarray()
-    
     word=vectorizer.get_feature_names()#词典中的单词
-    
     #算TF-IDF
     transformer = TfidfTransformer()#初始化对象
     tfidf = transformer.fit_transform(X)#将词频矩阵X统计成Ttf-idf值
@@ -87,59 +72,24 @@ def VSM():
     for i in range(len(weight[1])):
         if (weight[:,i]==0).all():
             weight = numpy.delete(weight, i, axis=1)
-    #for i in range(len(weight)):
-     #   for j in range(len(weight[i])):
-      #      if weight[i][j] == 0:
-       #         for k in range(len(weight)):
-        #            weight.remove(weight[k][j])
-    #print weight
     return weight
-    #将结果存入txt文件
-    '''f = open('C:\Users\fan\.spyder\VSM.txt', 'w')'''
+
 def trainSet():
     weight = VSM()
     trainSet_o = [0]
     trainSet = [trainSet_o * len(weight)]
-    #print trainSet
-    #trainSet.append(trainSet_o)
-    '''for i in range(len(weight)):
-        print weight[i]'''
-    #trainSet[length][]
-    #print weight[1]
-    print len(weight)
     for i in range(len(weight)):#每类文本的tf-idf词语权重，第一个for遍历所有文本，第二个for便利某一类文本下的词语权重
-        if i < (len(weight)) * 0.5:
-            #print len(weight[i])
+        if i < (len(weight)) * 0.8:
             weight_new = [weight[i]]
             trainSet = numpy.row_stack((trainSet, weight_new))
-            #print weight_new
-            #numpy.insert(trainSet,0,values=weight_new,axis=0)
-    #print (trainSet)
     return trainSet
 
 def testSet():
     weight = VSM()
     testSet_o = [0]
     testSet = [testSet_o * len(weight)]
-    #print trainSet
-    #trainSet.append(trainSet_o)
-    '''for i in range(len(weight)):
-        print weight[i]'''
-    #trainSet[length][]
-    #print weight[1]
-    for i in range(len(weight)):#打印每类文本的tf-idf词语权重，第一个for遍历所有文本，第二个for便利某一类文本下的词语权重
-        if i > (len(weight)) * 0.8:
-            #print len(weight[i])
+    for i in range(len(weight)):#每类文本的tf-idf词语权重，第一个for遍历所有文本，第二个for便利某一类文本下的词语权重
+        if i > (len(weight)) * 0.2 and i <= len(weight):
             weight_new = [weight[i]]
-            #print weight_new
             testSet = numpy.row_stack((testSet, weight_new))
-            #numpy.append(testSet,weight_new,axis=0)
-
-    #print testSet
     return testSet
-        #f.write('-------this is: ' + str(i) + ' class tf-idf weight of one file------\n')
-        #for j in range(len(word)):
-            #if weight[i][j] != 0:
-                #f.write(str(word[j]) + ' ' + str(weight[i][j]) + '\n')
-    #f.close()
-#trainSet()
